@@ -1,0 +1,37 @@
+# Use the latest Alpine image
+FROM alpine:latest
+
+# Install dependencies
+RUN apk update && apk add --no-cache \
+    python3 \
+    python3-dev \
+    py3-pip \
+    build-base \
+    linux-headers \
+    postgresql-dev \
+    libffi-dev \
+    openssl-dev \
+    cargo \
+    && pip install --upgrade pip
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the requirements file
+COPY requirements.txt /app/
+
+# Install Python dependencies
+RUN pip install -r requirements.txt
+
+# Copy the rest of the application code
+COPY . /app/
+
+# Expose the port the app runs on
+EXPOSE 8000
+
+# Run the application
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
